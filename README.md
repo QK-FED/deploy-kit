@@ -58,6 +58,7 @@ workspace | string | deploy all files in the directory
 ignore | string or array of string | ignore the matched files (glob pattern: https://github.com/isaacs/node-glob#glob-primer)
 deployTo | string | where the files are placed.
 rules | array of rule | rule use to speicify different place for each file. each rule has a `test` and a `dest` property.
+hasContinual | boolean | has continual upload to server, after every file change build.
 
 #### about rule:
 

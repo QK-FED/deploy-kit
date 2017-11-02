@@ -5,14 +5,20 @@ function md5(content) {
 }
 
 const cacheStore = {}
+var workType = 'YES';
 
-function DeployPlugin(options) {}
+function DeployPlugin(options) {
+  workType = (options.hasContinual ? 'YES' : 'NO') || 'YES';
+}
 
 DeployPlugin.prototype.apply = function(compiler) {
   const self = this
-  compiler.plugin('done', function(stats) {
+  var eventName = { YES: 'emit', NO: 'done' }
+
+  compiler.plugin(eventName[workType], function(abs, callback) {
     const files = []
-    const assets = stats.compilation.assets
+    const hasContinual = workType === 'YES'
+    const assets = hasContinual ? abs.assets : abs.compilation.assets
 
     Object.keys(assets).forEach(function(filename) {
       const file = assets[filename]
@@ -31,7 +37,8 @@ DeployPlugin.prototype.apply = function(compiler) {
       }
     })
 
-    self.client.exec(files)
+    self.client.exec(files, hasContinual)
+    if (hasContinual) callback()
   })
 }
 
