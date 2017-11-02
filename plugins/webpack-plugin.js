@@ -8,7 +8,7 @@ const cacheStore = {}
 var workType = 'YES';
 
 function DeployPlugin(options) {
-  workType = (options.hasContinual ? 'YES' : 'NO') || 'YES';
+  workType = (this.hasContinual ? 'YES' : 'NO') || 'YES';
 }
 
 DeployPlugin.prototype.apply = function(compiler) {
