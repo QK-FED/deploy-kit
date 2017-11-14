@@ -5,20 +5,40 @@ function md5(content) {
 }
 
 const cacheStore = {}
-var workType = 'YES';
 
-function DeployPlugin(options) {
-  workType = (this.hasContinual ? 'YES' : 'NO') || 'YES';
-}
+function DeployPlugin(options) {}
 
 DeployPlugin.prototype.apply = function(compiler) {
   const self = this
-  var eventName = { YES: 'emit', NO: 'done' }
 
-  compiler.plugin(eventName[workType], function(abs, callback) {
+  // compiler.plugin('emit', function(compilation, callback) {
+  //   const files = []
+  //   const assets = compilation.assets
+  //
+  //   Object.keys(assets).forEach(function(filename) {
+  //     const file = assets[filename]
+  //     const size = file.size()
+  //     const source = file.source()
+  //     const hash = md5(source)
+  //     const cache = cacheStore[filename]
+  //     if (cache !== hash) {
+  //       files.push({
+  //         size: size,
+  //         filename: filename,
+  //         content: new Buffer(source, 'utf-8'),
+  //         stats: {}
+  //       })
+  //       cacheStore[filename] = hash
+  //     }
+  //   })
+  //
+  //   self.client.exec(files)
+  //   callback()
+  // })
+
+  compiler.plugin('done', function(stats) {
     const files = []
-    const hasContinual = workType === 'YES'
-    const assets = hasContinual ? abs.assets : abs.compilation.assets
+    const assets = stats.compilation.assets
 
     Object.keys(assets).forEach(function(filename) {
       const file = assets[filename]
@@ -37,8 +57,7 @@ DeployPlugin.prototype.apply = function(compiler) {
       }
     })
 
-    self.client.exec(files, hasContinual)
-    if (hasContinual) callback()
+    self.client.exec(files)
   })
 }
 
